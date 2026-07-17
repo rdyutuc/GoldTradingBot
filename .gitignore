@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environment
+.venv/
+
+# JetBrains IDE
+.idea/
+
+# VS Code
+.vscode/
+
+# CSV files (optional - if you don't want to store generated data)
+*.csv
