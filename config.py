@@ -1,0 +1,13 @@
+# Trading Configuration
+
+SYMBOL = "XAUUSDm"
+TIMEFRAME = "H4"
+
+EMA_FAST = 50
+EMA_SLOW = 200
+
+RSI_PERIOD = 14
+
+RISK_PERCENT = 1
+
+RISK_REWARD = 2
