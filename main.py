@@ -1,20 +1,15 @@
-import MetaTrader5 as mt5
+import subprocess
+import sys
 
-# Connect to MT5
-if not mt5.initialize():
-    print("Connection failed!")
-    print(mt5.last_error())
-    quit()
+python = sys.executable
 
-print("Connected to MetaTrader 5!")
+print("Step 1: Downloading Gold data...")
+subprocess.run([python, "data/download_gold_data.py"], check=True)
 
-# Display account information
-account = mt5.account_info()
+print("Step 2: Calculating indicators...")
+subprocess.run([python, "indicators/moving_averages.py"], check=True)
 
-if account:
-    print(f"Login: {account.login}")
-    print(f"Balance: ${account.balance}")
-    print(f"Equity: ${account.equity}")
-    print(f"Server: {account.server}")
+print("Step 3: Running strategy...")
+subprocess.run([python, "strategies/strategy.py"], check=True)
 
-mt5.shutdown()
+print("\n✅ Gold Trading System completed successfully!")

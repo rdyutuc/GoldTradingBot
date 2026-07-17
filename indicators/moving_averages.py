@@ -1,7 +1,7 @@
 import pandas as pd
 
 # Load Gold data
-df = pd.read_csv("gold_h4.csv")
+df = pd.read_csv("data/raw/gold_h4.csv")
 
 # Calculate EMA 50
 df['EMA_50'] = df['close'].ewm(span=50, adjust=False).mean()
@@ -26,7 +26,7 @@ df['RSI'] = 100 - (100 / (1 + rs))
 print(df[['time', 'close', 'EMA_50', 'EMA_200', 'RSI']].tail())
 
 # Save the updated data
-df.to_csv("gold_h4_with_indicators.csv", index=False)
+df.to_csv("data/processed/gold_h4_with_indicators.csv", index=False)
 
 print("Indicators calculated successfully!")
 

@@ -28,7 +28,7 @@ print(df.head())
 print(df.tail())
 
 # Save to CSV
-df.to_csv("gold_h4.csv", index=False)
+df.to_csv("data/processed/gold_h4_with_indicators.csv", index=False)
 
 print("Saved data to gold_h4.csv")
 

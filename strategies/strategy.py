@@ -1,7 +1,7 @@
 import pandas as pd
 
 # Load data with indicators
-df = pd.read_csv("gold_h4_with_indicators.csv")
+df = pd.read_csv("data/processed/gold_h4_with_indicators.csv")
 
 # Generate signals
 df["Signal"] = ""
@@ -27,6 +27,6 @@ signals = df[df["Signal"] != ""]
 print(signals[["time", "close", "EMA_50", "EMA_200", "Signal"]])
 
 # Save results
-df.to_csv("gold_strategy.csv", index=False)
+df.to_csv("data/processed/gold_strategy.csv", index=False)
 
 print("Strategy file saved successfully!")
