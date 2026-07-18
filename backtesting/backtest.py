@@ -1,10 +1,12 @@
 import pandas as pd
 from pathlib import Path
-from .trade import Trade
-from .metrics import win_rate, net_profit
-from .report import print_report
 from dataclasses import asdict
+from .trade import Trade
+from .report import print_report
+from .drawdown import maximum_drawdown
+from .performance import calculate_performance
 from charts.equity_curve import plot_equity_curve
+
 
 # -----------------------------
 # Load Data
@@ -193,25 +195,13 @@ for i in range(20, len(df)):
 # -----------------------------
 # Results
 # -----------------------------
-total = wins + losses
+results = calculate_performance(
+    trade_log,
+    START_BALANCE,
+    balance
+)
 
-wr = win_rate(wins, losses) if total > 0 else 0
-
-# -----------------------------
-# Results
-# -----------------------------
-total = wins + losses
-
-wr = win_rate(wins, losses) if total > 0 else 0
-
-results = {
-    "Starting Balance": f"${START_BALANCE:,.2f}",
-    "Ending Balance": f"${balance:,.2f}",
-    "Total Trades": total,
-    "Wins": wins,
-    "Losses": losses,
-    "Win Rate": f"{wr:.2f}%"
-}
+results["Maximum Drawdown"] = f"{maximum_drawdown(trade_log, START_BALANCE):.2f}%"
 
 print_report(results)
 
