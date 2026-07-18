@@ -24,7 +24,7 @@ for i in range(1, len(df)):
 # Display only signals
 signals = df[df["Signal"] != ""]
 
-print(signals[["time", "close", "EMA_50", "EMA_200", "Signal"]])
+print(signals[["time", "close", "EMA_50", "EMA_200", "RSI","Signal"]])
 
 # Save results
 df.to_csv("data/processed/gold_strategy.csv", index=False)
