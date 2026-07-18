@@ -1,5 +1,10 @@
 import pandas as pd
 from pathlib import Path
+from .trade import Trade
+from .metrics import win_rate, net_profit
+from .report import print_report
+from dataclasses import asdict
+from charts.equity_curve import plot_equity_curve
 
 # -----------------------------
 # Load Data
@@ -92,13 +97,21 @@ for i in range(20, len(df)):
 
                 losses += 1
 
-                trade_log.append({
-                    "Type": "BUY",
-                    "Result": "LOSS",
-                    "Entry": position["entry"],
-                    "Exit": position["stop"],
-                    "Balance": balance
-                })
+                trade = Trade(
+                    trade_type="BUY",
+                    entry_time=position["entry_time"],
+                    exit_time=df.loc[i, "time"],
+                    entry_price=position["entry"],
+                    exit_price=position["target"],
+                    stop_loss=position["stop"],
+                    take_profit=position["target"],
+                    result="LOSS",
+                    profit=-risk,
+                    balance=balance,
+                    atr=df.loc[i, "ATR_14"]
+                )
+
+                trade_log.append(trade)
 
                 position = None
 
@@ -108,13 +121,21 @@ for i in range(20, len(df)):
 
                 wins += 1
 
-                trade_log.append({
-                    "Type": "BUY",
-                    "Result": "WIN",
-                    "Entry": position["entry"],
-                    "Exit": position["target"],
-                    "Balance": balance
-                })
+                trade = Trade(
+                    trade_type="BUY",
+                    entry_time=position["entry_time"],
+                    exit_time=df.loc[i, "time"],
+                    entry_price=position["entry"],
+                    exit_price=position["target"],
+                    stop_loss=position["stop"],
+                    take_profit=position["target"],
+                    result="WIN",
+                    profit=risk * RR,
+                    balance=balance,
+                    atr=df.loc[i, "ATR_14"]
+                )
+
+                trade_log.append(trade)
 
                 position = None
 
@@ -127,13 +148,21 @@ for i in range(20, len(df)):
 
                 losses += 1
 
-                trade_log.append({
-                    "Type": "SELL",
-                    "Result": "LOSS",
-                    "Entry": position["entry"],
-                    "Exit": position["stop"],
-                    "Balance": balance
-                })
+                trade = Trade(
+                    trade_type="SELL",
+                    entry_time=position["entry_time"],
+                    exit_time=df.loc[i, "time"],
+                    entry_price=position["entry"],
+                    exit_price=position["stop"],
+                    stop_loss=position["stop"],
+                    take_profit=position["target"],
+                    result="LOSS",
+                    profit=-risk,
+                    balance=balance,
+                    atr=df.loc[i, "ATR_14"]
+                )
+
+                trade_log.append(trade)
 
                 position = None
 
@@ -143,13 +172,21 @@ for i in range(20, len(df)):
 
                 wins += 1
 
-                trade_log.append({
-                    "Type": "SELL",
-                    "Result": "WIN",
-                    "Entry": position["entry"],
-                    "Exit": position["target"],
-                    "Balance": balance
-                })
+                trade = Trade(
+                    trade_type="SELL",
+                    entry_time=position["entry_time"],
+                    exit_time=df.loc[i, "time"],
+                    entry_price=position["entry"],
+                    exit_price=position["target"],
+                    stop_loss=position["stop"],
+                    take_profit=position["target"],
+                    result="WIN",
+                    profit=risk * RR,
+                    balance=balance,
+                    atr=df.loc[i, "ATR_14"]
+                )
+
+                trade_log.append(trade)
 
                 position = None
 
@@ -158,23 +195,33 @@ for i in range(20, len(df)):
 # -----------------------------
 total = wins + losses
 
-win_rate = (wins / total * 100) if total > 0 else 0
+wr = win_rate(wins, losses) if total > 0 else 0
 
-print("=" * 45)
-print("BACKTEST VERSION 2")
-print("=" * 45)
-print(f"Starting Balance : ${START_BALANCE:,.2f}")
-print(f"Ending Balance   : ${balance:,.2f}")
-print(f"Total Trades     : {total}")
-print(f"Wins             : {wins}")
-print(f"Losses           : {losses}")
-print(f"Win Rate         : {win_rate:.2f}%")
+# -----------------------------
+# Results
+# -----------------------------
+total = wins + losses
+
+wr = win_rate(wins, losses) if total > 0 else 0
+
+results = {
+    "Starting Balance": f"${START_BALANCE:,.2f}",
+    "Ending Balance": f"${balance:,.2f}",
+    "Total Trades": total,
+    "Wins": wins,
+    "Losses": losses,
+    "Win Rate": f"{wr:.2f}%"
+}
+
+print_report(results)
 
 # Save trades
-trade_df = pd.DataFrame(trade_log)
+trade_df = pd.DataFrame([asdict(t) for t in trade_log])
 
 output = BASE_DIR / "backtesting" / "trade_history.csv"
 
 trade_df.to_csv(output, index=False)
 
 print(f"\nTrade history saved to:\n{output}")
+
+plot_equity_curve(trade_log)
