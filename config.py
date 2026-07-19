@@ -3,11 +3,24 @@
 SYMBOL = "XAUUSDm"
 TIMEFRAME = "H4"
 
+# EMA Settings
 EMA_FAST = 50
 EMA_SLOW = 200
 
+# RSI Settings
 RSI_PERIOD = 14
+RSI_BUY = 55
+RSI_SELL = 45
 
+# ATR Settings
+ATR_PERIOD = 14
+ATR_MULTIPLIER = 1.5
+
+# Risk Management
 RISK_PERCENT = 1
-
 RISK_REWARD = 2
+
+# Trading Costs
+SPREAD = 0
+COMMISSION = 0
+SLIPPAGE = 0

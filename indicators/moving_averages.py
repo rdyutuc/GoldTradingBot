@@ -3,11 +3,15 @@ import pandas as pd
 # Load Gold data
 df = pd.read_csv("data/raw/gold_h4.csv")
 
-# Calculate EMA 50
-df['EMA_50'] = df['close'].ewm(span=50, adjust=False).mean()
+# Calculate EMA
+ema_periods = [20, 30, 50, 100, 150, 200]
 
-# Calculate EMA 200
-df['EMA_200'] = df['close'].ewm(span=200, adjust=False).mean()
+for period in ema_periods:
+    df[f"EMA_{period}"] = (
+        df["close"]
+        .ewm(span=period, adjust=False)
+        .mean()
+    )
 
 # Calculate RSI  (14)
 delta = df['close'].diff()

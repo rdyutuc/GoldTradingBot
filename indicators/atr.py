@@ -25,6 +25,6 @@ df["ATR_14"] = df["TR"].rolling(window=14).mean()
 df.drop(columns=["H-L", "H-PC", "L-PC", "TR"], inplace=True)
 
 # Save
-df.to_csv("data/processed/gold_strategy.csv", index=False)
+df.to_csv("data/processed/gold_h4_with_indicators.csv", index=False)
 
 print("✅ ATR calculated successfully!")
