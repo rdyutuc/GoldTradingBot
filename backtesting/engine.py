@@ -2,15 +2,18 @@ import pandas as pd
 from .trade import Trade
 
 
-def run_backtest(df):
-
-    # -----------------------------
-    # Settings
-    # -----------------------------
-    START_BALANCE = 10000
-    RISK_PERCENT = 1
-    ATR_MULTIPLIER = 1.5
-    RR = 2
+def run_backtest(
+    df,
+    starting_balance=10000,
+    risk_percent=1,
+    atr_multiplier=1.5,
+    rr=2,
+):
+    
+    START_BALANCE = starting_balance
+    RISK_PERCENT = risk_percent
+    ATR_MULTIPLIER = atr_multiplier
+    RR = rr
 
     # -----------------------------
     # Variables
@@ -27,7 +30,7 @@ def run_backtest(df):
     # -----------------------------
 # Backtest
 # -----------------------------
-    for i in range(20, len(df)):
+    for i in range(20, len(df) - 1):
 
         # Skip rows with no ATR yet
         if pd.isna(df.loc[i, "ATR_14"]):

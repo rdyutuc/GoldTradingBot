@@ -1,47 +1,44 @@
 import pandas as pd
-from config import EMA_FAST
-from config import EMA_SLOW
 
-# Load data with indicators
+from config import EMA_FAST, EMA_SLOW
+from strategies.strategy_engine import generate_signals
+
+# Load data
 df = pd.read_csv("data/processed/gold_h4_with_indicators.csv")
 
-# 🚨 SAFETY CHECK: See if ATR actually exists in the file
+# Safety check
 if "ATR_14" not in df.columns:
-    print("❌ WARNING: 'ATR_14' was not found in the input file!")
-    print("Make sure indicators/atr.py runs and saves to 'gold_h4_with_indicators.csv' first.")
-else:
-    print("✅ 'ATR_14' column successfully loaded.")
+    print("❌ WARNING: ATR_14 not found.")
+    exit()
+
+print("✅ ATR_14 column loaded.")
 
 # Generate signals
-df["Signal"] = ""
+df = generate_signals(
+    df,
+    ema_fast=EMA_FAST,
+    ema_slow=EMA_SLOW,
+)
 
-for i in range(1, len(df)):
-    # Buy Signal
-    if (
-        df.loc[i, f"EMA_{EMA_FAST}"] > df.loc[i, f"EMA_{EMA_SLOW}"] and
-        df.loc[i-1, f"EMA_{EMA_FAST}"] <= df.loc[i-1, f"EMA_{EMA_SLOW}"]
-    ):
-        df.loc[i, "Signal"] = "BUY"
-
-    # Sell Signal
-    elif (
-        df.loc[i, f"EMA_{EMA_FAST}"] < df.loc[i, f"EMA_{EMA_SLOW}"] and
-        df.loc[i-1, f"EMA_{EMA_FAST}"] >= df.loc[i-1, f"EMA_{EMA_SLOW}"]
-    ):
-        df.loc[i, "Signal"] = "SELL"
-
-# Display only signals
+# Show signals
 signals = df[df["Signal"] != ""]
 
-# Include ATR_14 in the printout if it exists, so we can verify it
-print_cols = ["time", "close", f"EMA_{EMA_FAST}", f"EMA_{EMA_SLOW}", "RSI"]
-if "ATR_14" in df.columns:
-    print_cols.append("ATR_14")
-print_cols.append("Signal")
+print_cols = [
+    "time",
+    "close",
+    f"EMA_{EMA_FAST}",
+    f"EMA_{EMA_SLOW}",
+    "RSI",
+    "ATR_14",
+    "Signal",
+]
 
 print(signals[print_cols])
 
-# Save results
-df.to_csv("data/processed/gold_strategy.csv", index=False)
+# Save
+df.to_csv(
+    "data/processed/gold_strategy.csv",
+    index=False,
+)
 
 print("Strategy file saved successfully!")
