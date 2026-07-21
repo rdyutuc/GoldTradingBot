@@ -55,20 +55,16 @@ def calculate_performance(trades, start_balance, end_balance):
     )        
 
     return {
-        "Starting Balance": f"${start_balance:,.2f}",
-        "Ending Balance": f"${end_balance:,.2f}",
-        "Net Profit": f"${end_balance-start_balance:,.2f}\n",
+        "Starting Balance": start_balance,
+        "Ending Balance": end_balance,
+        "Net Profit": end_balance - start_balance,
         "Total Trades": total,
         "Wins": wins,
         "Losses": losses,
-        "Win Rate": f"{win_rate:.2f}%\n",
-        "Profit Factor": (
-            "Infinity\n"
-            if profit_factor == float("inf")
-            else f"{profit_factor:.2f}\n"
-        ),
-        "Average Win": f"${average_win:,.2f}",
-        "Average Loss": f"${average_loss:,.2f}\n",
-        "Largest Win": f"${largest_win:,.2f}",
-        "Largest Loss": f"${largest_loss:,.2f}\n",
+        "Win Rate": win_rate,
+        "Profit Factor": profit_factor,
+        "Average Win": average_win,
+        "Average Loss": average_loss,
+        "Largest Win": largest_win,
+        "Largest Loss": largest_loss,
     }

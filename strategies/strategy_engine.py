@@ -2,28 +2,22 @@ import pandas as pd
 
 
 def generate_signals(df, ema_fast, ema_slow):
-    """
-    Generate BUY/SELL signals based on EMA crossover.
-    """
+    fast = f"EMA_{ema_fast}"
+    slow = f"EMA_{ema_slow}"
 
     df["Signal"] = ""
 
-    for i in range(1, len(df)):
+    buy = (
+        (df[fast] > df[slow]) &
+        (df[fast].shift(1) <= df[slow].shift(1))
+    )
 
-        # BUY
-        if (
-            df.loc[i, f"EMA_{ema_fast}"] > df.loc[i, f"EMA_{ema_slow}"]
-            and
-            df.loc[i - 1, f"EMA_{ema_fast}"] <= df.loc[i - 1, f"EMA_{ema_slow}"]
-        ):
-            df.loc[i, "Signal"] = "BUY"
+    sell = (
+        (df[fast] < df[slow]) &
+        (df[fast].shift(1) >= df[slow].shift(1))
+    )
 
-        # SELL
-        elif (
-            df.loc[i, f"EMA_{ema_fast}"] < df.loc[i, f"EMA_{ema_slow}"]
-            and
-            df.loc[i - 1, f"EMA_{ema_fast}"] >= df.loc[i - 1, f"EMA_{ema_slow}"]
-        ):
-            df.loc[i, "Signal"] = "SELL"
+    df.loc[buy, "Signal"] = "BUY"
+    df.loc[sell, "Signal"] = "SELL"
 
     return df

@@ -35,8 +35,9 @@ report = calculate_performance(
     balance
 )
 
-report["Maximum Drawdown"] = (
-    f"{maximum_drawdown(trade_log, START_BALANCE):.2f}%"
+report["Maximum Drawdown"] = maximum_drawdown(
+    trade_log,
+    START_BALANCE,
 )
 
 print_report(report)

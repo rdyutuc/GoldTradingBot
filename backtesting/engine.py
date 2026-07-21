@@ -33,7 +33,10 @@ def run_backtest(
     for i in range(20, len(df) - 1):
 
         # Skip rows with no ATR yet
-        if pd.isna(df.loc[i, "ATR_14"]):
+        row = df.iloc[i]
+        next_row = df.iloc[i + 1]
+
+        if pd.isna(row["ATR_14"]):
             continue
 
         # -------------------------
@@ -41,13 +44,13 @@ def run_backtest(
         # -------------------------
         if position is None:
 
-            signal = df.loc[i, "Signal"]
+            signal = row["Signal"]
 
             if signal == "BUY":
 
-                entry = df.loc[i + 1, "open"]
+                entry = next_row["open"]
 
-                stop = entry - ATR_MULTIPLIER * df.loc[i, "ATR_14"]
+                stop = entry - ATR_MULTIPLIER * row["ATR_14"]
 
                 target = entry + (entry - stop) * RR
 
@@ -56,14 +59,14 @@ def run_backtest(
                     "entry": entry,
                     "stop": stop,
                     "target": target,
-                    "entry_time": df.loc[i + 1, "time"]
+                    "entry_time": next_row["time"]
                 }
 
             elif signal == "SELL":
 
-                entry = df.loc[i + 1, "open"]
+                entry = next_row["open"]
 
-                stop = entry + ATR_MULTIPLIER * df.loc[i, "ATR_14"]
+                stop = entry + ATR_MULTIPLIER * row["ATR_14"]
 
                 target = entry - (stop - entry) * RR
 
@@ -72,7 +75,7 @@ def run_backtest(
                     "entry": entry,
                     "stop": stop,
                     "target": target,
-                    "entry_time": df.loc[i + 1, "time"]
+                    "entry_time": next_row["time"]
                 }
 
         # -------------------------
@@ -80,8 +83,8 @@ def run_backtest(
         # -------------------------
         else:
 
-            high = df.loc[i, "high"]
-            low = df.loc[i, "low"]
+            high = row["high"]
+            low = row["low"]
 
             risk = balance * RISK_PERCENT / 100
 
@@ -97,7 +100,7 @@ def run_backtest(
                     trade = Trade(
                         trade_type="BUY",
                         entry_time=position["entry_time"],
-                        exit_time=df.loc[i, "time"],
+                        exit_time=row["time"],
                         entry_price=position["entry"],
                         exit_price=position["target"],
                         stop_loss=position["stop"],
@@ -105,7 +108,7 @@ def run_backtest(
                         result="LOSS",
                         profit=-risk,
                         balance=balance,
-                        atr=df.loc[i, "ATR_14"]
+                        atr=row["ATR_14"]
                     )
 
                     trade_log.append(trade)
@@ -121,7 +124,7 @@ def run_backtest(
                     trade = Trade(
                         trade_type="BUY",
                         entry_time=position["entry_time"],
-                        exit_time=df.loc[i, "time"],
+                        exit_time=row["time"],
                         entry_price=position["entry"],
                         exit_price=position["target"],
                         stop_loss=position["stop"],
@@ -129,7 +132,7 @@ def run_backtest(
                         result="WIN",
                         profit=risk * RR,
                         balance=balance,
-                        atr=df.loc[i, "ATR_14"]
+                        atr=row["ATR_14"]
                     )
 
                     trade_log.append(trade)
@@ -148,7 +151,7 @@ def run_backtest(
                     trade = Trade(
                         trade_type="SELL",
                         entry_time=position["entry_time"],
-                        exit_time=df.loc[i, "time"],
+                        exit_time=row["time"],
                         entry_price=position["entry"],
                         exit_price=position["stop"],
                         stop_loss=position["stop"],
@@ -156,7 +159,7 @@ def run_backtest(
                         result="LOSS",
                         profit=-risk,
                         balance=balance,
-                        atr=df.loc[i, "ATR_14"]
+                        atr=row["ATR_14"]
                     )
 
                     trade_log.append(trade)
@@ -172,7 +175,7 @@ def run_backtest(
                     trade = Trade(
                         trade_type="SELL",
                         entry_time=position["entry_time"],
-                        exit_time=df.loc[i, "time"],
+                        exit_time=row["time"],
                         entry_price=position["entry"],
                         exit_price=position["target"],
                         stop_loss=position["stop"],
@@ -180,7 +183,7 @@ def run_backtest(
                         result="WIN",
                         profit=risk * RR,
                         balance=balance,
-                        atr=df.loc[i, "ATR_14"]
+                        atr=row["ATR_14"]
                     )
 
                     trade_log.append(trade)
